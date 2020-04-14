@@ -68,23 +68,23 @@ export const constantRoutes = [
     name: 'Basic',
     meta: { title: '基础设置', icon: 'example' },
     children: [
-      {
-        path: 'set',
-        name: 'Seeting',
-        component: () => import('@/views/basicSetting/index'),
-        meta: { title: '基础设置', icon: 'node' }
-      },
-      {
-        path: 'distribution',
-        name: 'Distribution',
-        component: () => import('@/views/basicSetting/distribution'),
-        meta: { title: '分销设置', icon: 'node' }
-      },
+      // {
+      //   path: 'set',
+      //   name: 'Seeting',
+      //   component: () => import('@/views/basicSetting/index'),
+      //   meta: { title: '基础设置', icon: 'node' }
+      // },
+      // {
+      //   path: 'distribution',
+      //   name: 'Distribution',
+      //   component: () => import('@/views/basicSetting/distribution'),
+      //   meta: { title: '分销设置', icon: 'node' }
+      // },
       {
         path: 'group',
         name: 'Group',
         component: () => import('@/views/basicSetting/userGroup'),
-        meta: { title: '用户组设置', icon: 'node' }
+        meta: { title: '用户组设置', icon: 'example' }
       }
 
     ]
@@ -178,6 +178,12 @@ export const constantRoutes = [
         name: 'Form',
         component: () => import('@/views/order/method'),
         meta: { title: '收款方式管理', icon: 'node' }
+      },
+      {
+        path: 'bank',
+        name: 'Bank',
+        component: () => import('@/views/order/bank'),
+        meta: { title: '银行卡管理', icon: 'node' }
       }
     ]
   },

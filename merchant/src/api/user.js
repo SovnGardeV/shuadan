@@ -24,11 +24,54 @@ export function logout() {
   })
 }
 
-export function getUserList(params) {
+export function getUserInfo() {
   return request({
-    url: '/scalp/user/list',
-    method: 'GET',
+    url: '/scalp/merchant/queryBasicInfo',
+    method: 'GET'
     // 'Content-Type': 'multipart/form-data',
+  })
+}
+
+export function updateLoginPassword(data) {
+  return request({
+    url: '/scalp/login/updUserPwd',
+    method: 'POST',
+    data,
+    'Content-Type': 'multipart/form-data'
+  })
+}
+
+export function updateSafePassword(data) {
+  return request({
+    url: '/scalp/login/updSafetyPwd',
+    method: 'POST',
+    data,
+    'Content-Type': 'multipart/form-data'
+  })
+}
+
+export function getBankList(params) {
+  return request({
+    url: '/scalp/bank/list',
+    method: 'GET',
     params
+  })
+}
+
+export function bank(type, data) {
+  return request({
+    url: `/scalp/bank/${type}`,
+    method: 'POST',
+    'Content-Type': type === 'add' ? 'multipart/form-data' : 'application/json',
+    data
+  })
+}
+
+export function withBalance(data) {
+  return request({
+    url: `/scalp/merchant/withBalance`,
+    method: 'POST',
+    'Content-Type': 'multipart/form-data',
+    data
   })
 }

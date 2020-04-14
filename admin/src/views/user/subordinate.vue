@@ -15,10 +15,18 @@
         <el-table-column align="center" label="手机号" prop="phone" />
         <el-table-column align="center" label="联系微信" prop="wechat" />
         <el-table-column align="center" label="注册时间" prop="registerTime" />
-        <el-table-column align="center" label="账号状态" prop="status" />
+        <el-table-column align="center" label="账号状态">
+          <template slot-scope="scope">
+            {{ map.status[scope.row.status] }}
+          </template>
+        </el-table-column>
         <el-table-column align="center" label="上次登录时间" prop="lastTime" />
         <el-table-column align="center" label="代理等级" prop="proxyLevel" />
-        <el-table-column align="center" label="接单状态" prop="receiptStatus" />
+        <el-table-column align="center" label="接单状态">
+          <template slot-scope="scope">
+            {{ map.receiptStatus[scope.row.receiptStatus] }}
+          </template>
+        </el-table-column>
 
       </el-table>
 
@@ -42,6 +50,16 @@ export default {
   },
   data() {
     return {
+      map: {
+        status: {
+          0: '异常',
+          1: '正常'
+        },
+        receiptStatus: {
+          0: '关闭',
+          1: '开启'
+        }
+      },
       mainTable: {
         loading: false,
         row: {},

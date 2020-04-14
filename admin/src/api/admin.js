@@ -43,9 +43,18 @@ export function updatePassword(data) { // 更改码商商户密码
   })
 }
 
-export function editBalance(data) { // 更改码商商户密码
+export function editBalance(data) { // 修改商户余额
   return request({
     url: '/scalp/merchant/editBalance',
+    method: 'POST',
+    'Content-Type': 'multipart/form-data',
+    data
+  })
+}
+
+export function addMerchant(data) { // 新增商户
+  return request({
+    url: '/scalp/merchant/add',
     method: 'POST',
     'Content-Type': 'multipart/form-data',
     data
@@ -82,6 +91,15 @@ export function openOrDraw(data) { // 一键开业\打烊
     url: '/scalp/user/OneOpenOrDraw',
     method: 'POST',
     'Content-Type': 'multipart/form-data',
+    data
+  })
+}
+
+export function editLockStatus(data) { // 修改商户、码商相关信息
+  return request({
+    url: '/scalp/merchant/editLockStatus',
+    method: 'POST',
+    'Content-Type': 'application/json',
     data
   })
 }

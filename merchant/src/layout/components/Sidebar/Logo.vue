@@ -24,7 +24,7 @@ export default {
   },
   data() {
     return {
-      title: '系统管理中心',
+      title: '商户管理中心',
       logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
     }
   }

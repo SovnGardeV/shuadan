@@ -35,3 +35,20 @@ export function callBackByHand(data) {
     data
   })
 }
+
+export function getBankList(params) {
+  return request({
+    url: '/scalp/bank/list',
+    method: 'GET',
+    params
+  })
+}
+
+export function bank(type, data) {
+  return request({
+    url: `/scalp/bank/${type}`,
+    method: 'POST',
+    'Content-Type': type === 'add' ? 'multipart/form-data' : 'application/json',
+    data
+  })
+}

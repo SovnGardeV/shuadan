@@ -42,3 +42,12 @@ export function auditWith(data) { // 商户提现审核
     data
   })
 }
+
+export function getWithdraw(params) { // 商户提现审核
+  return request({
+    url: '/scalp/account/queryWithdraw',
+    method: 'GET',
+    // 'Content-Type': 'multipart/form-data',
+    params
+  })
+}

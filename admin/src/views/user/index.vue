@@ -44,6 +44,9 @@
         </el-row>
       </el-card>
       <el-card>
+        <el-row style="margin-bottom: 10px; text-align: right">
+          <el-button size="mini" type="primary" @click="initForm(mainTable.addForm, 'addForm');mainTable.dialogAddVisible = true">开户</el-button>
+        </el-row>
         <el-table
           v-loading="mainTable.loading"
           class=""
@@ -93,6 +96,9 @@
                   v-model="scope.row.tempLock"
                   active-color="#13ce66"
                   inactive-color="#ff4949"
+                  @change="(val) => {
+                    return editLockStatus(val, 'tempLock',scope.row.id)
+                  }"
                 />
               </div>
               <div>永久锁定:
@@ -100,6 +106,9 @@
                   v-model="scope.row.permanentLock"
                   active-color="#13ce66"
                   inactive-color="#ff4949"
+                  @change="(val) => {
+                    return editLockStatus(val, 'permanentLock',scope.row.id)
+                  }"
                 />
               </div>
             </template>
@@ -121,6 +130,32 @@
           @pagination-change="handlePagerChange"
         />
       </el-card>
+
+      <el-dialog width="450px" center title="开户" :visible.sync="mainTable.dialogAddVisible">
+        <el-form ref="addForm" size="mini" label-width="100px" :model="mainTable.addForm">
+          <el-form-item label="账号(手机号)">
+            <el-input v-model="mainTable.addForm.phone" />
+          </el-form-item>
+          <el-form-item label="商户名">
+            <el-input v-model="mainTable.addForm.name" />
+          </el-form-item>
+          <el-form-item label="归属用户组">
+            <el-select v-model="mainTable.addForm.group_name">
+              <el-option v-for="item in group" :key="item.id" :value="item.groupName" :label="item.groupName">{{ item.groupName }}</el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="QQ">
+            <el-input v-model="mainTable.addForm.qq" />
+          </el-form-item>
+          <el-form-item label="微信号">
+            <el-input v-model="mainTable.addForm.wechat" />
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button size="mini" @click="mainTable.dialogAddVisible = false">取 消</el-button>
+          <el-button size="mini" type="primary" @click="handleSubmit">保 存</el-button>
+        </div>
+      </el-dialog>
 
       <el-dialog width="450px" center title="修改用户密码" :visible.sync="mainTable.dialogPasswordVisible">
         <el-form ref="passwordForm" size="mini" label-width="100px" :model="mainTable.passwordForm">
@@ -171,7 +206,7 @@
 
 <script>
 import { getMerchantList } from '@/api/merchant'
-import { updatePassword, editBalance } from '@/api/admin'
+import { updatePassword, editBalance, editLockStatus, getGroup, addMerchant } from '@/api/admin'
 import Pagination from '@/components/Pagination'
 import { JSEncrypt } from 'jsencrypt'
 
@@ -181,6 +216,7 @@ export default {
   },
   data() {
     return {
+      group: [],
       map: {
         permanentLock: {
           0: '关闭',
@@ -200,7 +236,7 @@ export default {
         loading: false,
         dialogPasswordVisible: false,
         dialogModifyVisible: false,
-        dialogPermissionVisible: false,
+        dialogAddVisible: false,
         commercialRatio: 0,
         row: {},
         filter: {
@@ -219,6 +255,13 @@ export default {
           newPassword: '',
           phone: ''
         },
+        addForm: {
+          phone: '',
+          name: '',
+          group_name: '',
+          qq: '',
+          wechat: ''
+        },
         array: [],
         tree: [],
         defaultMenu: [],
@@ -231,9 +274,28 @@ export default {
     }
   },
   created() {
+    this.getGroup()
     this.getMainTableData()
   },
   methods: {
+    getGroup() {
+      getGroup({ type: 2 }).then(response => {
+        this.group = response.rows || []
+      })
+    },
+    editLockStatus(val, type, id) {
+      const _form = {
+        id,
+        type: 0
+      }
+      _form[type] = val ? 1 : 0
+      editLockStatus(_form).then(response => {
+        if (!response.success) {
+          this.getMainTableData()
+          return
+        }
+      })
+    },
     initForm(form, formName) {
       const keyNameArr = Object.keys(form)
       keyNameArr.forEach(item => {
@@ -284,6 +346,12 @@ export default {
         pageSize: this.mainTable.pager.size
       }
       getMerchantList(_form).then(response => {
+        if (Array.isArray(response.rows)) {
+          response.rows.forEach(item => {
+            item.tempLock = !!item.tempLock
+            item.permanentLock = !!item.permanentLock
+          })
+        }
         this.mainTable.pager.total = response.data || 0
         this.mainTable.array = response.rows || []
       }).finally(_ => {
@@ -321,6 +389,15 @@ export default {
         if (response.code !== 200) return
         this.$message.success(response.message)
         this.mainTable.dialogModifyVisible = false
+        this.getMainTableData()
+      })
+    },
+    handleSubmit() {
+      addMerchant(this.mainTable.addForm).then(response => {
+        if (!response.success) return
+
+        this.$message.success(response.message)
+        this.mainTable.dialogAddVisible = false
         this.getMainTableData()
       })
     }

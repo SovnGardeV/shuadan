@@ -28,16 +28,16 @@ const mutations = {
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    const { username, password, safeCode } = userInfo
+    const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({
         account: username.trim(),
         password,
-        loginType: 'admin',
-        safeCode
+        loginType: 'merchant'
       }).then(response => {
         const { result } = response
         // commit('SET_NAME', username)
+        localStorage.setItem('merchantId', result.userInfo.id)
         setToken(result.token)
         resolve()
       }).catch(error => {
@@ -82,8 +82,7 @@ const actions = {
       logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         // commit('SET_NAME', name)
-        localStorage.setItem('name', '')
-        localStorage.setItem('number', '')
+        localStorage.clear()
         removeToken()
         resetRouter()
         resolve()

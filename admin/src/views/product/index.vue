@@ -80,8 +80,8 @@
           </el-table-column>
           <el-table-column align="center" label="操作" width="160px">
             <template slot-scope="scope">
-              <el-button size="mini" plain type="primary" @click="showDialog('edit', scope.row)">修改</el-button>
-              <el-button size="mini" plain type="danger" @click="deleteProduct(scope.row.id)">删除</el-button>
+              <el-button size="mini" type="primary" @click="showDialog('edit', scope.row)">编辑</el-button>
+              <el-button size="mini" type="danger" @click="deleteProduct(scope.row.id)">删除</el-button>
             </template>
           </el-table-column>
 
@@ -214,7 +214,7 @@ export default {
       } else {
         Object.assign(this.mainTable.form, item)
         this.mainTable.row = item
-        this.mainTable.dialogTitle = '修改产品'
+        this.mainTable.dialogTitle = '编辑产品'
       }
       this.mainTable.dialogType = type
       this.mainTable.dialogVisible = true

@@ -154,6 +154,7 @@ export function handleIntoChildren(arr) {
  * @returns {obj}
  */
 export function handleCopyObject(obj1, obj2) {
+  debugger
   const _key = Object.keys(obj2)
 
   _key.forEach(item => {

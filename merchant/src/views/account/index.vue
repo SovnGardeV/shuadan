@@ -3,11 +3,13 @@
     <div class="app-container">
       <el-card class="filter-container">
         <el-row>
-          <el-col class="title-color" :span="4" style="line-height: 40px; font-weight: bold;">码商充值记录及审核</el-col>
+          <el-col class="title-color" :span="4" style="line-height: 40px; font-weight: bold;">提现取款记录
+            <i :class="isShowing ? 'el-icon-arrow-up' : 'el-icon-arrow-down'" style="cursor:pointer" @click="isShowing = !isShowing" />
+          </el-col>
           <el-col :span="20">
             <el-form :inline="true" style="text-align:right">
               <el-form-item>
-                <el-input v-model="mainTable.filter.commercialName" placeholder="手机号或账户ID" size="mini" @keyup.enter.native="mainTable.pager.index = 1;getMainTableData()" />
+                <el-input v-model="mainTable.filter.accountNum" placeholder="账目号" size="mini" @keyup.enter.native="mainTable.pager.index = 1;getMainTableData()" />
               </el-form-item>
               <!-- <el-form-item>
                 <el-select v-model="mainTable.filter.type" size="mini" placeholder="类型">
@@ -37,8 +39,22 @@
             </el-form>
           </el-col>
         </el-row>
+        <el-row>
+          <el-collapse-transition>
+            <div v-show="isShowing">
+              <div style="padding: 10px 0">
+                <el-tag v-for="(value, key) in result" :key="key" style="margin-right:5px;margin-bottom:5px;">
+                  {{ key }}({{ value }})
+                </el-tag>
+              </div>
+            </div>
+          </el-collapse-transition>
+        </el-row>
       </el-card>
       <el-card>
+        <el-row style="margin-bottom:10px; text-align: right">
+          <el-button type="primary" size="mini" @click="showDialog">提现申请</el-button>
+        </el-row>
         <el-table
           v-loading="mainTable.loading"
           class=""
@@ -51,27 +67,12 @@
           highlight-current-row
         >
           <el-table-column align="center" label="订单号" prop="id" />
-          <el-table-column align="center" label="类型">
-            <template slot-scope="scope">
-              {{ map.type[scope.row.type] }}
-            </template>
-          </el-table-column>
-          <el-table-column align="center" label="充值信息">
-            <template slot-scope="scope">
-              <div>商品id:{{ scope.row.shopId }}</div>
-              <div>数量:{{ scope.row.shopNum }}</div>
-              <div>是否使用抵用金:{{ map.isSub[scope.row.isSub] }}</div>
-            </template>
-          </el-table-column>
-          <el-table-column align="center" label="用户ID" prop="userId" />
-          <el-table-column align="center" label="姓名" prop="receiptName" />
-          <el-table-column align="center" label="收到金额" prop="orderId">
-            <template slot-scope="scope">
-              <div>实际金额:{{ scope.row.actualMoney }}</div>
-              <div>操作金额:{{ scope.row.operationMoney }}</div>
-            </template>
-          </el-table-column>
-          <el-table-column align="center" label="银行" prop="receiptBank" />
+          <el-table-column align="center" label="操作前金额" prop="operationMoney" />
+          <el-table-column align="center" label="手续费" prop="serviceMoney" />
+          <el-table-column align="center" label="实际金额" prop="actualMoney" />
+          <!-- <el-table-column align="center" label="用户ID" prop="userId" /> -->
+          <el-table-column align="center" label="收款银行" prop="receiptBank" />
+          <el-table-column align="center" label="收款人" prop="receiptName" />
           <el-table-column align="center" label="收款账号" prop="bankNumber" />
           <el-table-column align="center" label="银行流水单号" prop="bankNum" />
           <!-- <el-table-column align="center" label="审核说明" prop="orderId" /> -->
@@ -82,12 +83,6 @@
           </el-table-column>
           <el-table-column align="center" label="处理时间" prop="updateTime" />
           <el-table-column align="center" label="添加时间" prop="createTime" />
-          <el-table-column align="center" label="操作" fixed="right">
-            <template slot-scope="scope">
-              <el-button size="mini" :disabled="scope.row.status !== 1" type="primary" @click="showModify(scope.row)">处理</el-button>
-
-            </template>
-          </el-table-column>
 
         </el-table>
 
@@ -99,16 +94,24 @@
         />
       </el-card>
 
-      <el-dialog width="450px" center title="审核管理" :visible.sync="mainTable.dialogVisible">
-        <el-form ref="form" label-width="80px" size="mini" :model="mainTable.form">
-          <el-form-item label="审核状态">
-            <el-select v-model="mainTable.form.status">
-              <el-option :value="3" label="通过">通过</el-option>
-              <el-option :value="2" label="驳回">驳回</el-option>
+      <el-dialog width="450px" center title="提现申请" :visible.sync="mainTable.dialogVisible">
+        <el-form ref="form" label-width="100px" size="mini" :model="mainTable.form">
+          <el-form-item label="提现银行卡">
+            <el-select v-model="mainTable.form.bankId" style="width:100%" @change="selectBank">
+              <el-option v-for="item in bankList" :key="item.id" :value="item" :label="`${item.bankName}(${item.account})`">{{ item.bankName }}({{ item.account }})</el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="备注">
-            <el-input v-model="mainTable.form.remark" type="textarea" rows="4" />
+          <el-form-item label="收款人">
+            <el-input v-model="mainTable.form.receiptName" disabled />
+          </el-form-item>
+          <el-form-item label="银行名">
+            <el-input v-model="mainTable.form.receiptBank" disabled />
+          </el-form-item>
+          <el-form-item label="卡号">
+            <el-input v-model="mainTable.form.bankNumber" disabled />
+          </el-form-item>
+          <el-form-item label="取款金额">
+            <el-input v-model="mainTable.form.withMoney" type="number" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -122,7 +125,8 @@
 </template>
 
 <script>
-import { getAccountList, auditAccount } from '@/api/account'
+import { getAccountList, getWithdraw } from '@/api/account'
+import { withBalance, getBankList } from '@/api/user'
 import Pagination from '@/components/Pagination'
 
 export default {
@@ -131,22 +135,16 @@ export default {
   },
   data() {
     return {
+      isShowing: false,
+      result: {},
       map: {
-        type: {
-          1: '充值',
-          2: '提现',
-          3: '订单'
-        },
         status: {
           1: '待处理',
           2: '驳回',
           3: '通过'
-        },
-        isSub: {
-          1: '是',
-          0: '否'
         }
       },
+      bankList: [],
       mainTable: {
         loading: false,
         dialogVisible: false,
@@ -157,8 +155,11 @@ export default {
           time: []
         },
         form: {
-          status: '',
-          remark: ''
+          withMoney: '',
+          receiptBank: '',
+          receiptName: '',
+          bankNumber: '',
+          bankId: ''
         },
         array: [],
         tree: [],
@@ -172,20 +173,61 @@ export default {
     }
   },
   created() {
+    this.getBankList()
+    this.getWithdraw()
     this.getMainTableData()
   },
   methods: {
-    showModify(item) {
-      this.mainTable.row = item
+    showDialog() {
+      this.initForm(this.mainTable.form, 'form')
       this.mainTable.dialogVisible = true
+    },
+    initForm(form, formName) {
+      const keyNameArr = Object.keys(form)
+      keyNameArr.forEach(item => {
+        if (item !== 'userId') form[item] = ''
+      })
+
+      this.$nextTick(_ => {
+        if (this.$refs[formName]) this.$refs[formName].clearValidate()
+      })
+    },
+    selectBank(val) {
+      this.mainTable.form.bankNumber = val.account
+      this.mainTable.form.receiptName = val.name
+      this.mainTable.form.receiptBank = val.bankName
+    },
+    getWithdraw() {
+      getWithdraw({ id: localStorage.getItem('merchantId') }).then(response => {
+        const _map = {
+          locationCash: '历史提现',
+          todayCash: '今日提现',
+          yesterdayCash: '昨日提现'
+        }
+        const _obj = {}
+
+        for (const key in response.result || {}) {
+          _obj[_map[key]] = response.result[key] || 0
+        }
+        this.result = _obj
+      })
+    },
+    getBankList() {
+      getBankList({
+        userId: localStorage.getItem('merchantId'),
+        status: 1
+      }).then(response => {
+        this.bankList = response.rows || []
+      })
     },
     getMainTableData() {
       const self = this
       this.mainTable.loading = true
       const _form = {
-        userType: 1,
+        userType: 0,
+        userId: localStorage.getItem('merchantId'),
         accountNum: this.mainTable.filter.accountNum,
-        type: this.mainTable.filter.type,
+        // type: this.mainTable.filter.type,
         openTime: (function() {
           if (Array.isArray(self.mainTable.filter.time) && self.mainTable.filter.time.length) {
             return self.mainTable.filter.time[0]
@@ -215,10 +257,12 @@ export default {
       this.getMainTableData()
     },
     handleSubmit() {
-      auditAccount({
-        id: this.mainTable.row.id,
-        status: this.mainTable.form.status,
-        remark: this.mainTable.form.remark
+      withBalance({
+        id: localStorage.getItem('merchantId'),
+        withMoney: this.mainTable.form.withMoney,
+        receiptBank: this.mainTable.form.receiptBank,
+        receiptName: this.mainTable.form.receiptName,
+        bankNumber: this.mainTable.form.bankNumber
       }).then(response => {
         if (response.code !== 200) return
 
@@ -227,7 +271,6 @@ export default {
         this.getMainTableData()
       })
     }
-
   }
 }
 </script>

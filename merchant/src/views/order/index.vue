@@ -3,22 +3,17 @@
     <el-card class="filter-container">
       <el-row>
         <el-col class="title-color" :span="6" style="line-height: 40px; font-weight: bold;">
-          平台订单记录
+          抢单记录
           <i :class="isShowing ? 'el-icon-arrow-up' : 'el-icon-arrow-down'" style="cursor:pointer" @click="isShowing = !isShowing" />
         </el-col>
         <el-col :span="18">
           <el-form :inline="true" style="text-align:right">
             <el-form-item>
-              <el-input v-model="mainTable.filter.number" placeholder="订单号或用户id" size="mini" @keyup.enter.native="mainTable.pager.index = 1;getMainTableData()" />
-            </el-form-item>
-            <el-form-item>
-              <el-select v-model="mainTable.filter.orderStatus" size="mini" placeholder="订单状态">
-                <el-option v-for="(value, key) in map.orderStatus" :key="key" :value="key" :label="value">{{ value }}</el-option>
-              </el-select>
+              <el-input v-model="mainTable.filter.number" placeholder="订单号" size="mini" @keyup.enter.native="mainTable.pager.index = 1;getMainTableData()" />
             </el-form-item>
             <el-form-item>
               <el-select v-model="mainTable.filter.pay_status" size="mini" placeholder="是否正常回调">
-                <el-option v-for="(value, key) in map.orderStatus" :key="key" :value="key" :label="value">{{ value }}</el-option>
+                <el-option v-for="(value, key) in map.payStatus" :key="key" :value="key" :label="value">{{ value }}</el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
@@ -48,12 +43,9 @@
         <el-collapse-transition>
           <div v-show="isShowing">
             <div style="padding: 10px 0">
-              <el-tag>今日订单额 (0)</el-tag>
-              <el-tag>今日订单额 (0)</el-tag>
-              <el-tag>今日订单额 (0)</el-tag>
-              <el-tag>今日订单额 (0)</el-tag>
-              <el-tag>今日订单额 (0)</el-tag>
-              <el-tag>今日订单额 (0)</el-tag>
+              <el-tag v-for="(value, key) in mainTable.result" :key="key" style="margin-right:5px;margin-bottom:5px;">
+                {{ key }}({{ value }})
+              </el-tag>
             </div>
           </div>
         </el-collapse-transition>
@@ -74,70 +66,32 @@
         stripe
         fit
         highlight-current-row
-        @selection-change="handleSelectionChange"
       >
         <!-- <el-table-column type="selection" /> -->
-        <el-table-column align="center" label="渠道信息" prop="orderId" />
+        <!-- <el-table-column align="center" label="渠道信息" prop="orderId" /> -->
         <el-table-column align="center" label="订单号">
           <template slot-scope="scope">
             <div class="over-hide" :title="`订单号:${scope.row.orderId}`">订单号:{{ scope.row.orderId }}</div>
             <div class="over-hide" :title="`外部订单号:${scope.row.outId}`">外部订单号:{{ scope.row.outId }}</div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="用户ID">
-          <template slot-scope="scope">
-            <div class="over-hide">码商ID:{{ scope.row.userId }}</div>
-            <div class="over-hide">商户ID:{{ scope.row.merchantId }}</div>
-          </template>
-        </el-table-column>
         <el-table-column align="center" label="收款金额" prop="earnMonry" />
-        <el-table-column align="center" label="收益">
-          <template slot-scope="scope">
-            <div>平台:{{ scope.row.merchantEarn }}</div>
-            <div>码商:{{ scope.row.userEarn }}</div>
-          </template>
-        </el-table-column>
         <el-table-column align="center" label="确认方式">
           <template slot-scope="scope">
             {{ map.userPassType[scope.row.userPassType] }}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="状态">
+        <el-table-column align="center" label="是否正常回调">
           <template slot-scope="scope">
-            <div>{{ map.orderStatus[scope.row.orderStatus] }}</div>
+            <!-- <div>{{ map.orderStatus[scope.row.orderStatus] }}</div> -->
             <div>{{ map.payStatus[scope.row.payStatus] }}</div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="异常单">
-          <template slot-scope="scope">
-            {{ map.isUnusual[scope.row.isUnusual] }}
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="利润概况">
-          <template slot-scope="scope">
-            <div>平台利润比:{{ scope.row.platRatio }}</div>
-            <div>代理分润:{{ scope.row.agencyRatio }}</div>
-          </template>
-        </el-table-column>
+        <el-table-column align="center" label="收款时间" prop="remitTime" />
         <el-table-column align="center" label="回调次数" prop="backNum" />
-        <el-table-column align="center" label="订单时间" prop="orderTime" />
-        <el-table-column align="center" label="打款时间" prop="remitTime" />
         <el-table-column align="center" label="回调时间" prop="backTime" />
-        <el-table-column align="center" label="过期时间" prop="pastTime" />
+        <!-- <el-table-column align="center" label="过期时间" prop="pastTime" /> -->
         <el-table-column align="center" label="备注" prop="remark" />
-        <el-table-column align="center" label="操作" width="200px" fixed="right">
-          <template slot-scope="scope">
-            <el-button :disabled="scope.row.payStatus" size="mini" type="primary" @click="confirmOrder(scope.row.orderId, 1)">通过</el-button>
-            <el-popover
-              placement="top-end"
-              trigger="click"
-            >
-              <el-button slot="reference" :disabled="scope.row.payStatus" size="mini" type="danger" @click="mainTable.form.remark = '';mainTable.row = scope.row">驳回</el-button>
-              <el-input v-model="mainTable.form.remark" placeholder="请输入理由" size="mini" type="textarea" :rows="2" />
-              <el-button type="text" size="mini" style="float:right" @click="confirmOrder(mainTable.row.orderId, 0)">确定</el-button>
-            </el-popover>
-          </template>
-        </el-table-column>
 
       </el-table>
 
@@ -152,7 +106,7 @@
 </template>
 
 <script>
-import { getOrderList, affirmOrder, staticOrder } from '@/api/order'
+import { getOrderList, getOrderInfo, affirmOrder } from '@/api/order'
 import Pagination from '@/components/Pagination'
 
 export default {
@@ -209,17 +163,37 @@ export default {
   },
   created() {
     this.getMainTableData()
+    this.getOrderInfo()
   },
   methods: {
-    getStaticOrderInfo() {
-      staticOrder().then(response => {
-        this.mainTable.result = response.result
+    getOrderInfo() {
+      getOrderInfo({
+        id: localStorage.getItem('merchantId')
+      }).then(response => {
+        const _map = {
+          money: '总金额',
+          num: '总订单数',
+          userprofit: '总利润',
+          todayMoney: '今日金额',
+          todayNum: '今日订单数',
+          todayProfit: '今日利润',
+          yesterdayMoney: '昨日金额',
+          yesterdayProfit: '昨日利润',
+          yesterdayNum: '昨日订单数'
+        }
+        const _obj = {}
+
+        for (const key in response.result) {
+          _obj[_map[key]] = response.result[key] || 0
+        }
+        this.mainTable.result = _obj
       })
     },
     getMainTableData() {
       const self = this
       this.mainTable.loading = true
       const _form = {
+        userId: localStorage.getItem('merchantId'),
         openTime: (function() {
           if (Array.isArray(self.mainTable.filter.time) && self.mainTable.filter.time.length) {
             return self.mainTable.filter.time[0]

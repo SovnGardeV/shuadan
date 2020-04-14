@@ -9,12 +9,12 @@ export function getOrderList(data) {
   })
 }
 
-export function staticOrder(data) {
+export function getOrderInfo(params) {
   return request({
     url: '/scalp/order/queryOrderInfo',
     method: 'GET',
     // 'Content-Type': 'multipart/form-data',
-    data
+    params
   })
 }
 

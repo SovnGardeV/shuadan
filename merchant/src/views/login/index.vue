@@ -48,22 +48,6 @@
         </span>
       </el-form-item>
 
-      <el-form-item prop="safeCode">
-        <span class="svg-container">
-          <svg-icon icon-class="password" />
-        </span>
-        <el-input
-          ref="safeCode"
-          v-model="loginForm.safeCode"
-          type="password"
-          placeholder="安全密码"
-          name="safeCode"
-          tabindex="3"
-          auto-complete="on"
-          @keyup.enter.native="handleLogin"
-        />
-      </el-form-item>
-
       <el-button
         v-loading="loading"
         element-loading-background="rgba(255, 255, 255, .4)"
@@ -154,11 +138,9 @@ export default {
             const encrypt = new JSEncrypt()
             encrypt.setPublicKey(response.publicKey)
             const _password = encrypt.encrypt(this.loginForm.password)
-            const _safeCode = encrypt.encrypt(this.loginForm.safeCode)
             const _form = {
               username: this.loginForm.username,
-              password: _password,
-              safeCode: _safeCode
+              password: _password
             }
             this.$store.dispatch('user/login', _form).then(() => {
               this.$router.push({ path: this.redirect || '/' })

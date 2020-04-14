@@ -38,12 +38,6 @@ export const constantRoutes = [
   },
 
   {
-    path: '/register',
-    component: () => import('@/views/register/index'),
-    hidden: true
-  },
-
-  {
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
@@ -60,106 +54,6 @@ export const constantRoutes = [
       meta: { title: '首页', icon: 'dashboard' }
     }]
   },
-
-  {
-    path: '/basic',
-    component: Layout,
-    redirect: '/basic/set',
-    name: 'Basic',
-    meta: { title: '基础设置', icon: 'example' },
-    children: [
-      {
-        path: 'set',
-        name: 'Seeting',
-        component: () => import('@/views/basicSetting/index'),
-        meta: { title: '基础设置', icon: 'node' }
-      },
-      {
-        path: 'distribution',
-        name: 'Distribution',
-        component: () => import('@/views/basicSetting/distribution'),
-        meta: { title: '分销设置', icon: 'node' }
-      },
-      {
-        path: 'group',
-        name: 'Group',
-        component: () => import('@/views/basicSetting/userGroup'),
-        meta: { title: '用户组设置', icon: 'node' }
-      }
-
-    ]
-  },
-  {
-    path: '/user',
-    component: Layout,
-    redirect: '/user/index',
-    name: 'User',
-    meta: { title: '用户管理', icon: 'user' },
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/user/index'), // Parent router-view
-        name: 'UserList',
-        meta: { title: '商户管理', icon: 'node' }
-      },
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/user/info'),
-        meta: { title: '码商管理', icon: 'node' },
-        children: [
-          {
-            path: 'commission',
-            name: 'Commission',
-            component: () => import('@/views/user/commission'),
-            meta: { title: '分佣列表' },
-            hidden: true
-          },
-          {
-            path: 'subordinate',
-            name: 'Subordinate',
-            component: () => import('@/views/user/subordinate'),
-            meta: { title: '下级列表' },
-            hidden: true
-          }
-        ]
-      }
-
-    ]
-  },
-  {
-    path: '/count',
-    component: Layout,
-    redirect: '/count/index',
-    name: 'Count',
-    meta: { title: '账目管理', icon: 'menu' },
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/count/index'), // Parent router-view
-        name: 'merchant',
-        meta: { title: '码商充值', icon: 'node' }
-      },
-      {
-        path: 'operatorCash',
-        component: () => import('@/views/count/operator'), // Parent router-view
-        name: 'operatorCash',
-        meta: { title: '商户提现', icon: 'node' }
-      },
-      {
-        path: 'merchantCashRecord',
-        component: () => import('@/views/count/merchantRecord'), // Parent router-view
-        name: 'merchantCashRecord',
-        meta: { title: '码商库存变动', icon: 'node' }
-      },
-      {
-        path: 'operatorCashRecord',
-        component: () => import('@/views/count/operatorRecord'), // Parent router-view
-        name: 'operatorCashRecord',
-        meta: { title: '商户资金变动', icon: 'node' }
-      }
-    ]
-  },
   {
     path: '/order',
     component: Layout,
@@ -171,91 +65,49 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/order/index'), // Parent router-view
         name: 'OrderList',
-        meta: { title: '订单管理', icon: 'node' }
-      },
-      {
-        path: 'method',
-        name: 'Form',
-        component: () => import('@/views/order/method'),
-        meta: { title: '收款方式管理', icon: 'node' }
+        meta: { title: '收款管理', icon: 'node' }
       }
     ]
   },
   {
-    path: '/product',
+    path: '/account',
     component: Layout,
-    redirect: '/product/index',
-    name: 'Product',
-    meta: { title: '产品管理', icon: 'form' },
+    redirect: '/account/index',
+    name: 'Account',
+    meta: { title: '账户记录', icon: 'form' },
     children: [
       {
         path: 'index',
-        component: () => import('@/views/product/index'), // Parent router-view
-        name: '1',
-        meta: { title: '产品管理', icon: 'product' }
+        component: () => import('@/views/account/index'), // Parent router-view
+        name: 'AccountList',
+        meta: { title: '提现记录', icon: 'node' }
+      },
+      {
+        path: 'menu',
+        component: () => import('@/views/account/menu'), // Parent router-view
+        name: 'AccountMenu',
+        meta: { title: '账户变动', icon: 'node' }
       }
     ]
   },
   {
-    path: '/journal',
+    path: '/person',
     component: Layout,
-    redirect: '/journal/index',
-    name: 'Journal',
-    meta: { title: '日志中心', icon: 'journal' },
+    redirect: '/person/index',
+    name: 'Person',
+    meta: { title: '个人中心', icon: 'form' },
     children: [
       {
         path: 'index',
-        component: () => import('@/views/journal/index'), // Parent router-view
-        name: 'JournalList',
-        meta: { title: '日志列表', icon: 'node' }
+        component: () => import('@/views/person/index'), // Parent router-view
+        name: 'PersonInfo',
+        meta: { title: '基础信息', icon: 'node' }
       },
       {
-        path: 'message',
-        component: () => import('@/views/journal/message'), // Parent router-view
-        name: 'MessageList',
-        meta: { title: '消息列表', icon: 'node' }
-      }
-    ]
-  },
-  {
-    path: '/admini',
-    component: Layout,
-    redirect: '/admin/index',
-    name: 'Admin',
-    meta: { title: '管理员列表', icon: 'admin' },
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/admin/index'), // Parent router-view
-        name: 'AdminList',
-        meta: { title: '管理员列表', icon: 'node' }
-      },
-      {
-        path: 'code',
-        component: () => import('@/views/admin/code'), // Parent router-view
-        name: 'Code',
-        meta: { title: '商户邀请码', icon: 'node' }
-      }
-    ]
-  },
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/index',
-    name: 'Nested',
-    meta: { title: '权限菜单', icon: 'tree' },
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/nested/index'), // Parent router-view
-        name: 'Menu',
-        meta: { title: '菜单管理', icon: 'node' }
-      },
-      {
-        path: 'permission',
-        component: () => import('@/views/nested/permission'), // Parent router-view
-        name: 'Permission',
-        meta: { title: '权限管理', icon: 'node' }
+        path: 'bank',
+        component: () => import('@/views/person/bank'), // Parent router-view
+        name: 'Bank',
+        meta: { title: '银行卡管理', icon: 'node' }
       }
     ]
   },

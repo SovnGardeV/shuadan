@@ -65,7 +65,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/order/index'), // Parent router-view
         name: 'OrderList',
-        meta: { title: '收款管理', icon: 'node' }
+        meta: { title: '收款管理', icon: 'form' }
       }
     ]
   },
@@ -74,7 +74,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/account/index',
     name: 'Account',
-    meta: { title: '账户记录', icon: 'form' },
+    meta: { title: '账户记录', icon: 'menu' },
     children: [
       {
         path: 'index',
@@ -95,7 +95,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/person/index',
     name: 'Person',
-    meta: { title: '个人中心', icon: 'form' },
+    meta: { title: '个人中心', icon: 'admin' },
     children: [
       {
         path: 'index',

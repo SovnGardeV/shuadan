@@ -13,6 +13,7 @@
 
 const version = require('element-ui/package.json').version // element-ui version from node_modules
 const ORIGINAL_THEME = '#409EFF' // default color
+// import NProgress from 'nprogress' // progress bar
 
 export default {
   data() {
@@ -28,6 +29,7 @@ export default {
     }
   },
   async created() {
+    // NProgress.start()
     const theme = localStorage.getItem('theme') || '#409EFF'
     if (theme) {
       const message = this.$message({
@@ -37,6 +39,7 @@ export default {
       })
       await this.changeStyle(theme, theme)
       message.close()
+      // NProgress.done()
     }
   },
 

@@ -157,7 +157,7 @@
                 <el-input v-model="mainTable.passwordForm.password" />
               </el-col>
               <el-col :span="6">
-                <el-button type="warning">生成密码</el-button>
+                <el-button type="warning" @click="randomPassword">生成密码</el-button>
               </el-col>
             </el-row>
           </el-form-item>
@@ -194,6 +194,7 @@ import { getUserList } from '@/api/user'
 import { updatePassword, editOpenStatus, openOrDraw } from '@/api/admin'
 import Pagination from '@/components/Pagination'
 import { JSEncrypt } from 'jsencrypt'
+import { randomPassword } from '@/utils/index'
 
 export default {
   components: {
@@ -233,7 +234,7 @@ export default {
           time: []
         },
         passwordForm: {
-          newPassword: '',
+          password: '',
           phone: ''
         },
         array: [],
@@ -251,6 +252,9 @@ export default {
     this.getMainTableData()
   },
   methods: {
+    randomPassword() {
+      this.mainTable.passwordForm.password = randomPassword(8)
+    },
     openOrDraw(val) {
       openOrDraw({
         status: val

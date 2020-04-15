@@ -5,7 +5,7 @@
       <div class="title-container">
         <el-row>
           <el-col :span="4" style="text-align:center;color: #fff;line-height:29px; font-size: 29px">
-            <i class="el-icon-platform-eleme" />
+            <i class="el-icon-user-solid" />
           </el-col>
           <el-col :span="20">
             <h3 style="border-left: 1px solid rgb(204, 204, 204, .4)" class="title">登录界面</h3>

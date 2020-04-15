@@ -86,7 +86,7 @@
                 <el-input v-model="mainTable.passwordForm.password" />
               </el-col>
               <el-col :span="6">
-                <el-button type="warning">生成密码</el-button>
+                <el-button type="warning" @click="randomPassword">生成密码</el-button>
               </el-col>
             </el-row>
           </el-form-item>
@@ -103,6 +103,7 @@
 
 <script>
 import { getAdminList } from '@/api/admin'
+import { randomPassword } from '@/utils/index'
 import Pagination from '@/components/Pagination'
 
 export default {
@@ -143,7 +144,7 @@ export default {
           remark: ''
         },
         passwordForm: {
-          newPassword: '',
+          password: '',
           phone: ''
         },
         array: [],
@@ -161,6 +162,9 @@ export default {
     this.getMainTableData()
   },
   methods: {
+    randomPassword() {
+      this.mainTable.passwordForm.password = randomPassword(8)
+    },
     initForm(form, formName) {
       const keyNameArr = Object.keys(form)
       keyNameArr.forEach(item => {

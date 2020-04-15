@@ -151,7 +151,7 @@ export function handleIntoChildren(arr) {
 
 /**
  * @param {obj1, obj2} // 将获取目录的一维数组转换为二维数组
- * @returns {obj}
+ * @returns {Object}
  */
 export function handleCopyObject(obj1, obj2) {
   const _key = Object.keys(obj2)
@@ -163,4 +163,22 @@ export function handleCopyObject(obj1, obj2) {
   })
 
   return obj1
+}
+
+/**
+ * @param {int} 随机生成密码
+ * @returns {String}
+ */
+export function randomPassword(size) {
+  const seed = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 'p', 'Q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+    '2', '3', '4', '5', '6', '7', '8', '9'
+  ] // 数组
+  const seedlength = seed.length// 数组长度
+  var createPassword = ''
+  for (let i = 0; i < size; i++) {
+    const j = Math.floor(Math.random() * seedlength)
+    createPassword += seed[j]
+  }
+  return createPassword
 }

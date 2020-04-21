@@ -6,6 +6,11 @@
 
     <div class="right-menu">
       <!-- <div style="float:left">换色</div> -->
+      <div class="userInfo">
+        <span class="userInfo-item">账户余额：{{ userInfo.balance || 0 }}</span>
+        <span class="userInfo-item">订单冻结余额：{{ userInfo.frozen || 0 }}</span>
+        <span class="userInfo-item">提现冻结余额：{{ userInfo.withFrozen || 0 }}</span>
+      </div>
       <theme-picker />
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
@@ -40,6 +45,11 @@ export default {
     Hamburger,
     ThemePicker
   },
+  data() {
+    return {
+      userInfo: JSON.parse(localStorage.getItem('userInfo')) || {}
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
@@ -62,6 +72,19 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/styles/variables.scss";
+.userInfo{
+  float: left;
+  line-height:50px;
+  font-size:12px;
+  color:#999;
+  border-left: 1px solid #eee;
+  border-right: 1px solid #eee;
+  margin-right: 15px;
+  padding: 0 15px;
+  &-item:not(:last-child){
+    padding-right: 8px;
+  }
+}
 .hideSidebar{
   .navbar{
     width: calc(100% - #{$sideBarWidthHide})

@@ -38,6 +38,7 @@ const actions = {
         const { result } = response
         // commit('SET_NAME', username)
         localStorage.setItem('merchantId', result.userInfo.id)
+        localStorage.setItem('userInfo', JSON.stringify(result.userInfo))
         setToken(result.token)
         resolve()
       }).catch(error => {

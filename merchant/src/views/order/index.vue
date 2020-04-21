@@ -75,7 +75,11 @@
             <div class="over-hide" :title="`外部订单号:${scope.row.outId}`">外部订单号:{{ scope.row.outId }}</div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收款金额" prop="earnMonry" />
+        <el-table-column align="center" label="收款金额" prop="earnMonry">
+          <template slot-scope="scope">
+            <div>{{ $tool.division(scope.row.earnMonry) }}</div>
+          </template>
+        </el-table-column>
         <el-table-column align="center" label="确认方式">
           <template slot-scope="scope">
             {{ map.userPassType[scope.row.userPassType] }}
@@ -184,7 +188,7 @@ export default {
         const _obj = {}
 
         for (const key in response.result) {
-          _obj[_map[key]] = response.result[key] || 0
+          _obj[_map[key]] = this.$tool.division(response.result[key]) || 0
         }
         this.mainTable.result = _obj
       })

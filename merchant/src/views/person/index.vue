@@ -49,7 +49,7 @@
               </el-col>
               <el-col :sm="24" :md="12">
                 <el-form-item label="账号状态">
-                  <span>{{ userInfo.status }}</span>
+                  <span>{{ map.status[userInfo.status] }}</span>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -127,6 +127,12 @@ import { getUserInfo, updateLoginPassword, updateSafePassword } from '@/api/user
 export default {
   data() {
     return {
+      map: {
+        status: {
+          0: '异常',
+          1: '正常'
+        }
+      },
       loginForm: {
         loading: false,
         oldPwd: '',

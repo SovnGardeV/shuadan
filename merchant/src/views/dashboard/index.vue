@@ -11,7 +11,8 @@ export default {
   name: 'Dashboard',
   data() {
     return {
-      name: localStorage.getItem('name')
+      name: localStorage.getItem('merchantId'),
+      userInfo: JSON.parse(localStorage.getItem('userInfo'))
     }
   }
 }

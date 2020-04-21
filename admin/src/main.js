@@ -13,6 +13,8 @@ import App from './App'
 import store from './store'
 import router from './router'
 
+import $tool from '@/utils/math'
+Vue.prototype.$tool = $tool
 import '@/icons' // icon
 import '@/permission' // permission control
 

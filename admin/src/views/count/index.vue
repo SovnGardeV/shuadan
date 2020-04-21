@@ -67,8 +67,8 @@
           <el-table-column align="center" label="姓名" prop="receiptName" />
           <el-table-column align="center" label="收到金额" prop="orderId">
             <template slot-scope="scope">
-              <div>实际金额:{{ scope.row.actualMoney }}</div>
-              <div>操作金额:{{ scope.row.operationMoney }}</div>
+              <div>实际金额:{{ $tool.division(scope.row.actualMoney) }}</div>
+              <div>操作金额:{{ $tool.division(scope.row.operationMoney) }}</div>
             </template>
           </el-table-column>
           <el-table-column align="center" label="银行" prop="receiptBank" />

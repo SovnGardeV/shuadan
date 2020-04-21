@@ -29,6 +29,9 @@
         </el-row>
       </el-card>
       <el-card>
+        <el-row style="margin-bottom: 10px; text-align:right">
+          <el-button size="mini" type="primary" @click="showDialog">新增</el-button>
+        </el-row>
         <el-table
           v-loading="mainTable.loading"
           class=""
@@ -75,25 +78,27 @@
         />
       </el-card>
 
-      <el-dialog width="450px" center title="修改用户密码" :visible.sync="mainTable.dialogPasswordVisible">
-        <el-form ref="form" size="mini" label-width="100px" :model="mainTable.passwordForm">
-          <el-form-item label="手机号">
-            <el-input v-model="mainTable.passwordForm.phone" disabled="" />
+      <el-dialog width="450px" center title="新增管理员" :visible.sync="mainTable.dialogVisible">
+        <el-form ref="form" size="mini" label-width="140px" :model="mainTable.form">
+          <el-form-item label="手机号(账号)">
+            <el-input v-model="mainTable.form.account" />
           </el-form-item>
-          <el-form-item label="新登录密码">
-            <el-row :gutter="10">
-              <el-col :span="16">
-                <el-input v-model="mainTable.passwordForm.password" />
-              </el-col>
-              <el-col :span="6">
-                <el-button type="warning" @click="randomPassword">生成密码</el-button>
-              </el-col>
-            </el-row>
+          <el-form-item label="密码">
+            <el-input v-model="mainTable.form.password" type="password" />
+          </el-form-item>
+          <el-form-item label="安全码">
+            <el-input v-model="mainTable.form.safeCode" type="password" />
+          </el-form-item>
+          <el-form-item label="是否为超级管理员">
+            <el-select v-model="mainTable.form.isSuperAdmin">
+              <el-option :value="1" label="是">是</el-option>
+              <el-option :value="0" label="否">否</el-option>
+            </el-select>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="mainTable.dialogPasswordVisible = false">取 消</el-button>
-          <el-button size="mini" type="primary" @click="handleSubmitForm">保 存</el-button>
+          <el-button size="mini" @click="mainTable.dialogVisible = false">取 消</el-button>
+          <el-button size="mini" type="primary" @click="handleSubmit">保 存</el-button>
         </div>
       </el-dialog>
 
@@ -102,9 +107,10 @@
 </template>
 
 <script>
-import { getAdminList } from '@/api/admin'
+import { getAdminList, system } from '@/api/admin'
 import { randomPassword } from '@/utils/index'
 import Pagination from '@/components/Pagination'
+import { JSEncrypt } from 'jsencrypt'
 
 export default {
   components: {
@@ -125,11 +131,7 @@ export default {
       getTreeData: '',
       mainTable: {
         loading: false,
-        treeLoading: false,
-        dialogPasswordVisible: false,
-        dialogModifyVisible: false,
-        dialogPermissionVisible: false,
-        commercialRatio: 0,
+        dialogVisible: false,
         row: {},
         filter: {
           phoneId: '',
@@ -138,14 +140,11 @@ export default {
           receiptStatus: '',
           time: []
         },
-        modifyForm: {
-          operator_type: '',
-          value: '',
-          remark: ''
-        },
-        passwordForm: {
+        form: {
+          account: '',
           password: '',
-          phone: ''
+          safeCode: '',
+          isSuperAdmin: ''
         },
         array: [],
         tree: [],
@@ -164,6 +163,10 @@ export default {
   methods: {
     randomPassword() {
       this.mainTable.passwordForm.password = randomPassword(8)
+    },
+    showDialog() {
+      this.initForm(this.mainTable.form, 'form')
+      this.mainTable.dialogVisible = true
     },
     initForm(form, formName) {
       const keyNameArr = Object.keys(form)
@@ -194,6 +197,27 @@ export default {
     handlePagerChange(val) {
       this.mainTable.pager = val
       this.getMainTableData()
+    },
+    handleSubmit() {
+      this.$store.dispatch('user/getPublicKey').then(response => {
+        const encrypt = new JSEncrypt()
+        encrypt.setPublicKey(response.publicKey)
+        const _password = encrypt.encrypt(this.mainTable.form.password)
+        const _safeCode = encrypt.encrypt(this.mainTable.form.safeCode)
+        const _form = {
+          account: this.mainTable.form.account,
+          password: _password,
+          safeCode: _safeCode,
+          isSuperAdmin: this.mainTable.form.isSuperAdmin
+        }
+        system('add', _form).then(response => {
+          if (!response.success) return
+          this.$message.success(response.message)
+          this.mainTable.dialogVisible = false
+        })
+      }).finally(() => {
+        this.loading = false
+      })
     }
   }
 }

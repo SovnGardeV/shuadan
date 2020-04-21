@@ -63,8 +63,16 @@
             </template>
           </el-table-column>
           <el-table-column align="center" label="产品描述" prop="shopDescribe" />
-          <el-table-column align="center" label="利润" prop="profit" />
-          <el-table-column align="center" label="价格" prop="price" />
+          <el-table-column align="center" label="利润" prop="profit">
+            <template slot-scope="scope">
+              {{ $tool.division(scope.row.profit) }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="价格" prop="price">
+            <template slot-scope="scope">
+              {{ $tool.division(scope.row.price) }}
+            </template>
+          </el-table-column>
           <el-table-column align="center" label="上下架状态">
             <template slot-scope="scope">
               <div>
@@ -213,6 +221,8 @@ export default {
         this.mainTable.dialogTitle = '新增产品'
       } else {
         Object.assign(this.mainTable.form, item)
+        this.mainTable.form.profit = this.mainTable.form.profit / 100
+        this.mainTable.form.price = this.mainTable.form.price / 100
         this.mainTable.row = item
         this.mainTable.dialogTitle = '编辑产品'
       }
@@ -318,6 +328,8 @@ export default {
         id: type === 'edit' ? this.mainTable.row.id : undefined
       }
       Object.assign(_form, this.mainTable.form)
+      _form.price = _form.price * 100
+      _form.profit = _form.profit * 100
 
       typeMap[type](_form).then(response => {
         if (response.code !== 200) return

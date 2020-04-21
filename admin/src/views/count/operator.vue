@@ -51,9 +51,21 @@
           highlight-current-row
         >
           <el-table-column align="center" label="订单号" prop="id" />
-          <el-table-column align="center" label="操作前金额" prop="operationMoney" />
-          <el-table-column align="center" label="手续费" prop="serviceMoney" />
-          <el-table-column align="center" label="实际金额" prop="actualMoney" />
+          <el-table-column align="center" label="操作前金额">
+            <template slot-scope="scope">
+              {{ $tool.division(scope.row.operationMoney) }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="手续费" prop="serviceMoney">
+            <template slot-scope="scope">
+              {{ $tool.division(scope.row.serviceMoney) }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="实际金额" prop="actualMoney">
+            <template slot-scope="scope">
+              {{ $tool.division(scope.row.actualMoney) }}
+            </template>
+          </el-table-column>
           <el-table-column align="center" label="用户ID" prop="userId" />
           <el-table-column align="center" label="收款银行" prop="receiptBank" />
           <el-table-column align="center" label="收款人" prop="receiptName" />

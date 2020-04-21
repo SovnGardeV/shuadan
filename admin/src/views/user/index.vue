@@ -67,8 +67,8 @@
           <el-table-column align="center" label="账户信息">
             <template slot-scope="scope">
               <div>余额:{{ scope.row.balance }}</div>
-              <div>订单冻结:{{ scope.row.frozen }}</div>
-              <div>提现冻结:{{ scope.row.withFrozen }}</div>
+              <div>订单冻结:{{ $tool.division(scope.row.frozen) }}</div>
+              <div>提现冻结:{{ $tool.division(scope.row.withFrozen) }}</div>
             </template>
           </el-table-column>
           <el-table-column align="center" label="时间信息">
@@ -386,9 +386,11 @@ export default {
     },
     handleModify() {
       const _form = {
-        id: this.mainTable.row.id
+        id: this.mainTable.row.id,
+        operator_type: this.mainTable.modifyForm.operator_type,
+        value: this.mainTable.modifyForm.value * 100,
+        remark: this.mainTable.modifyForm.remark
       }
-      Object.assign(_form, this.mainTable.modifyForm)
       editBalance(_form).then(response => {
         if (response.code !== 200) return
         this.$message.success(response.message)

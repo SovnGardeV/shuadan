@@ -93,8 +93,8 @@
         <el-table-column align="center" label="收款金额" prop="earnMonry" />
         <el-table-column align="center" label="收益">
           <template slot-scope="scope">
-            <div>平台:{{ scope.row.merchantEarn }}</div>
-            <div>码商:{{ scope.row.userEarn }}</div>
+            <div>平台:{{ $tool.division(scope.row.merchantEarn) }}</div>
+            <div>码商:{{ $tool.division(scope.row.userEarn ) }}</div>
           </template>
         </el-table-column>
         <el-table-column align="center" label="确认方式">

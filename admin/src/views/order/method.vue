@@ -8,12 +8,20 @@
           <i class="el-icon-refresh changeMode" @click="changeMode" />
         </el-col>
         <el-col :span="18">
-          <el-form :inline="true" style="text-align:right">
+          <el-form ref="filter" :inline="true" style="text-align:right">
             <!-- <el-form-item label="图片地址">
           <el-input v-model="mainTable.filter.qrUrl " size="mini" />
         </el-form-item> -->
             <el-form-item>
               <el-input v-model="mainTable.filter.name" placeholder="收款名" clearable size="mini" />
+            </el-form-item>
+            <el-form-item v-show="mode === '码商'">
+              <el-select v-model="mainTable.filter.useStatus" placeholder="使用状态" clearable size="mini">
+                <el-option :value="0" label="关闭">关闭</el-option>
+                <el-option :value="1" label="开启">开启</el-option>
+                <el-option :value="2" label="待审核">待审核</el-option>
+                <el-option :value="3" label="驳回">驳回</el-option>
+              </el-select>
             </el-form-item>
             <el-form-item>
               <el-select v-model="mainTable.filter.type" placeholder="类型" clearable size="mini">
@@ -22,7 +30,7 @@
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" size="mini" @click="getQRList">
+              <el-button type="primary" size="mini" @click="mainTable.pager.index = 1;getQRList()">
                 <i class="el-icon-search" />
               </el-button>
             </el-form-item>
@@ -43,8 +51,8 @@
             <div class="qr-info">
               <div class="account">{{ item.bankAccount }}</div>
               <div class="name">{{ item.name }}</div>
-              <div class="account-type" style="width:49%;display:inline-block">今日收款:{{ item.todayAccount }}</div>
-              <div class="account-type" style="width:49%;display:inline-block">最大收款:{{ item.maxAccount }}</div>
+              <div class="account-type" style="width:49%;display:inline-block">今日收款:{{ $tool.division(item.todayAccount) }}</div>
+              <div class="account-type" style="width:49%;display:inline-block">最大收款:{{ $tool.division(item.maxAccount ) }}</div>
               <div v-show="item.useStatus !== 3" style="font-size:12px;line-height:20px">轮询开关:
                 <el-switch
                   v-model="item.pollStatus"
@@ -82,6 +90,9 @@
             </div>
           </el-card>
         </el-col>
+      </el-row>
+      <el-row style="text-align:center; color:#ccc; padding: 20px 0 0 0; cursor:pointer">
+        <span @click="loadMore">{{ loadText }}</span>
       </el-row>
     </el-card>
 
@@ -184,6 +195,7 @@ export default {
         qrUrl: '',
         floatMoney: ''
       },
+      loadText: '点击加载更多',
       mainTable: {
         loading: false,
         dialogTitle: '新增收款码',
@@ -212,6 +224,11 @@ export default {
           useStatus: '',
           remark: ''
         },
+        pager: {
+          index: 1,
+          total: 0,
+          size: 10
+        },
         formRules: {
           qrUrl: [{ required: true, trigger: 'blur' }],
           enableStatus: [{ required: true, trigger: 'blur' }],
@@ -239,7 +256,34 @@ export default {
     this.getQRList()
   },
   methods: {
+    loadMore() {
+      if (this.loadText === '已无更多') return
+      this.mainTable.pager.index++
+      this.mainTable.loading = true
+      const _form = {
+        pageNo: this.mainTable.pager.index,
+        pageSize: this.mainTable.pager.size
+      }
+      Object.assign(_form, this.mainTable.filter)
+      queryQrAll(_form).then(response => {
+        if (response.code !== 200) return
+        if (Array.isArray(response.rows) && response.rows.length) {
+          response.rows.forEach(item => {
+            item.pollStatus = !!item.pollStatus
+          })
+        } else {
+          this.loadText = '已无更多'
+          return
+        }
+        this.mainTable.array = this.mainTable.array.concat(response.rows || [])
+      }).finally(_ => {
+        this.mainTable.loading = false
+      })
+    },
     changeMode() {
+      this.loadText = '点击加载更多'
+      this.initForm(this.mainTable.filter)
+      this.mainTable.pager.index = 1
       document.querySelector('.changeMode')
       this.mode = this.mode === '系统' ? '码商' : '系统'
     },
@@ -262,7 +306,7 @@ export default {
       })
 
       this.$nextTick(_ => {
-        this.$refs[formName].clearValidate()
+        if (this.$refs[formName]) this.$refs[formName].clearValidate()
       })
     },
     showDialog(type, item) {
@@ -308,7 +352,9 @@ export default {
         add: addQR,
         edit: editQR
       }
-      _map[this.dialogMode](this.mainTable.codeForm).then(response => {
+      const _form = Object.assign({}, this.mainTable.codeForm)
+      _form.maxAccount = _form.maxAccount * 100
+      _map[this.dialogMode](_form).then(response => {
         if (response.code !== 200) return
         this.$message({
           type: 'success',
@@ -331,8 +377,13 @@ export default {
       })
     },
     getQRList() {
+      this.loadText = '点击加载更多'
       this.mainTable.loading = true
-      const _form = this.mainTable.filter
+      const _form = {
+        pageNo: this.mainTable.pager.index,
+        pageSize: this.mainTable.pager.size
+      }
+      Object.assign(_form, this.mainTable.filter)
       queryQrAll(_form).then(response => {
         if (response.code !== 200) return
         if (Array.isArray(response.rows)) {

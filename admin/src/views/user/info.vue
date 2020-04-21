@@ -74,8 +74,8 @@
           </el-table-column>
           <el-table-column align="center" label="账户信息">
             <template slot-scope="scope">
-              <div>抵用金:{{ scope.row.voucherMoney }}</div>
-              <div>抵用金冻结:{{ scope.row.voucherFrozen }}</div>
+              <div>抵用金:{{ $tool.division(scope.row.voucherMoney) }}</div>
+              <div>抵用金冻结:{{ $tool.division(scope.row.voucherFrozen) }}</div>
             </template>
           </el-table-column>
           <el-table-column align="center" label="时间信息">
@@ -115,6 +115,9 @@
                   v-model="scope.row.practiceStatus"
                   active-color="#13ce66"
                   inactive-color="#ff4949"
+                  @change="(val) => {
+                    return editLockStatus(val, scope.row.id)
+                  }"
                 />
               </div>
               <div>账号状态:
@@ -191,7 +194,7 @@
 
 <script>
 import { getUserList } from '@/api/user'
-import { updatePassword, editOpenStatus, openOrDraw } from '@/api/admin'
+import { updatePassword, editOpenStatus, openOrDraw, editLockStatus } from '@/api/admin'
 import Pagination from '@/components/Pagination'
 import { JSEncrypt } from 'jsencrypt'
 import { randomPassword } from '@/utils/index'
@@ -265,6 +268,18 @@ export default {
         this.getMainTableData()
       })
     },
+    editLockStatus(val, id) {
+      editLockStatus({
+        id,
+        type: 1,
+        practiceStatus: val ? 1 : 2
+      }).then(response => {
+        if (!response.success) {
+          this.getMainTableData()
+          return
+        }
+      })
+    },
     editOpenStatus(val, id) {
       editOpenStatus({
         id,
@@ -326,6 +341,7 @@ export default {
         if (Array.isArray(result.records)) {
           result.records.forEach(item => {
             item.userStatus = !!item.userStatus
+            item.practiceStatus = item.practiceStatus === 1
           })
         }
         this.mainTable.pager.total = result.total || 0

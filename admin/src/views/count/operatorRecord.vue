@@ -58,11 +58,19 @@
         >
           <el-table-column align="center" label="订单号" prop="recordId" />
           <el-table-column align="center" label="用户ID" prop="userId" />
-          <el-table-column align="center" label="操作前金额" prop="oldMoney" />
-          <el-table-column align="center" label="当前金额" prop="nowMoney" />
+          <el-table-column align="center" label="操作前金额" prop="oldMoney">
+            <template slot-scope="scope">
+              {{ $tool.division(scope.row.oldMoney) }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="当前金额" prop="nowMoney">
+            <template slot-scope="scope">
+              {{ $tool.division(scope.row.oldMoney) }}
+            </template>
+          </el-table-column>
           <el-table-column align="center" label="变动金额">
             <template slot-scope="scope">
-              {{ scope.row.type + scope.row.changeMoney }}
+              {{ scope.row.type + $tool.division(scope.row.changeMoney) }}
             </template>
           </el-table-column>
           <el-table-column align="center" label="入账类型">

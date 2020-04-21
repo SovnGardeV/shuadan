@@ -12,16 +12,39 @@
         fit
         highlight-current-row
       >
-        <el-table-column align="center" label="订单号" prop="orderId" />
-        <el-table-column align="center" label="用户ID" prop="userId" />
-        <el-table-column align="center" label="用户ID" prop="userId" />
-        <el-table-column align="center" label="姓名" prop="receiptName" />
-        <el-table-column align="center" label="收到金额" prop="orderId" />
-        <el-table-column align="center" label="银行" prop="receiptBank" />
-        <el-table-column align="center" label="收款账号" prop="bankNumber" />
-        <el-table-column align="center" label="银行流水单号" prop="bankNum" />
-        <el-table-column align="center" label="处理时间" prop="updateTime" />
-        <el-table-column align="center" label="添加时间" prop="createTime" />
+        <el-table-column align="center" label="订单ID" prop="orderId" />
+        <el-table-column align="center" label="码商ID" prop="userId" />
+        <el-table-column align="center" label="一级码商">
+          <template slot-scope="scope">
+            <div>ID：{{ scope.row.oneUserId }}</div>
+            <div>收益：{{ $tool.division(scope.row.oneUserMoney) }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="二级码商">
+          <template slot-scope="scope">
+            <div>ID：{{ scope.row.twoUserId }}</div>
+            <div>收益：{{ $tool.division(scope.row.twoUserMoney) }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="三级码商">
+          <template slot-scope="scope">
+            <div>ID：{{ scope.row.threeUserId }}</div>
+            <div>收益：{{ $tool.division(scope.row.threeUserMoney) }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="四级码商">
+          <template slot-scope="scope">
+            <div>ID：{{ scope.row.fourUserId }}</div>
+            <div>收益：{{ $tool.division(scope.row.fourUserMoney) }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="个人收益">
+          <template slot-scope="scope">
+            <div>{{ $tool.division(scope.row.proxyMoney) }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="创建时间" prop="createTime" />
+        <el-table-column align="center" label="修改时间" prop="updateTime" />
 
       </el-table>
 

@@ -47,7 +47,7 @@ export function editBalance(data) { // 修改商户余额
   return request({
     url: '/scalp/merchant/editBalance',
     method: 'POST',
-    'Content-Type': 'multipart/form-data',
+    'Content-Type': 'application/json',
     data
   })
 }
@@ -98,6 +98,15 @@ export function openOrDraw(data) { // 一键开业\打烊
 export function editLockStatus(data) { // 修改商户、码商相关信息
   return request({
     url: '/scalp/merchant/editLockStatus',
+    method: 'POST',
+    'Content-Type': 'application/json',
+    data
+  })
+}
+
+export function system(type, data) { // 添加或修改管理员
+  return request({
+    url: `/scalp/system/${type}`,
     method: 'POST',
     'Content-Type': 'application/json',
     data
